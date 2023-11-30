@@ -36,3 +36,4 @@ if __name__ == "__main__":
     json_file_path = sys.argv[1]
     starting_argument = sys.argv[2]
     argumentation(json_file_path, starting_argument)
+    print("testestduvbbeltest")
