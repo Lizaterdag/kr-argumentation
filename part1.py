@@ -28,6 +28,7 @@ def argumentation(json_file_path, start_arg):
             break
         new_arg = input(new_arg + "\n")
         used.append(new_arg)
+        print(used)
     
 
 
