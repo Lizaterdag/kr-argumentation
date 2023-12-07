@@ -1,4 +1,5 @@
 import json
+import copy
 
 def read_json(file_path):
     with open(file_path, 'r') as file:
@@ -8,67 +9,61 @@ def read_json(file_path):
 def create_attack_relations_dict(attack_relations):
     attack_dict = {}
     for attack in attack_relations:
-        print(attack)
         attacker, attacked = attack
         if attacker not in attack_dict:
             attack_dict[attacker] = []
         attack_dict[attacker].append(attacked)
-        print(attack_dict)
     return attack_dict
 
-def is_conflict(arguments, labeling, attack_relations, arg1, arg2):
-    # Check if arg1 and arg2 are attacking each other
-    return arg2 in attack_relations.get(arg1, []) and arg1 in attack_relations.get(arg2, [])
+def is_conflict(labeling, arg, attack_relations):
+    # Check if there is an 'in' node attacking an 'in' node
+    for attacker in attack_relations.get(arg, []):
+        if labeling[attacker] == 'in':
+            return True
+    return False
 
-def is_complete_extension(arguments, labeling, attack_relations):
-    for arg, label in labeling.items():
-        if label == 'in':
-            for attacked_arg in attack_relations.get(arg, []):
-                if labeling.get(attacked_arg) == 'in':
-                    return False
-    return True
+def node_labeling(arguments, attack_relations):
+    labeling = {}
+    for arg in arguments:
+        labeling[arg] = 'undecided'
 
-def count_labels(labeling, label):
-    return sum(1 for l in labeling.values() if l == label)
+    # Continue until there are no constraint violations
+    while True:
+        # Create a copy of the current labeling to track changes
+        prev_labeling = copy.deepcopy(labeling)
 
-def find_best_labeling(arguments, attack_relations, current_labeling, best_labeling, start_key=0):
-    if len(current_labeling) == len(arguments):
-        if is_complete_extension(arguments, current_labeling, attack_relations):
-            in_count = count_labels(current_labeling, 'in')
-            out_count = count_labels(current_labeling, 'out')
-            if in_count + out_count > best_labeling['max_count']:
-                best_labeling['labeling'] = current_labeling.copy()
-                best_labeling['max_count'] = in_count + out_count
-        return
+        for arg in arguments:
+            if labeling[arg] == 'undecided' and not is_conflict(labeling, arg, attack_relations):
+                # If the current node is 'undecided' and has no conflict, label it 'in'
+                labeling[arg] = 'in'
+            elif labeling[arg] == 'undecided':
+                # If there is a conflict, label it 'out'
+                labeling[arg] = 'out'
 
-    current_arg = start_key
-    while current_arg in current_labeling:
-        current_arg += 1
+        # Check for constraint conflicts
+        for arg, arg_label in labeling.items():
+            for attacker in attack_relations.get(arg, []):
+                if labeling[arg] == 'in' and labeling[attacker] == 'in':
+                    # Constraint conflict, set the label to 'undecided'
+                    labeling[arg] = 'undecided'
+                elif labeling[arg] == 'out' and labeling[attacker] == 'out':
+                    labeling[arg] = 'undecided'
+                    break
 
-    current_labeling[current_arg] = 'in'
-
-    # Check for conflicts and resolve them
-    for arg in range(len(arguments)):
-        if arg != current_arg and is_conflict(arguments, current_labeling, attack_relations, arg, current_arg):
-            current_labeling[arg] = 'undecided'
-            find_best_labeling(arguments, attack_relations, current_labeling, best_labeling, start_key=current_arg + 1)
-            current_labeling[arg] = 'out'  # Also try labeling the conflicting argument as 'out'
+        # Break the loop if no changes were made to the labeling
+        if prev_labeling == labeling:
             break
 
-    find_best_labeling(arguments, attack_relations, current_labeling, best_labeling, start_key=current_arg + 1)
-    current_labeling[current_arg] = 'out'
-    find_best_labeling(arguments, attack_relations, current_labeling, best_labeling, start_key=current_arg + 1)
-    current_labeling.pop(current_arg)
+    return labeling
 
 def main(file_path):
     data = read_json(file_path)
-    arguments = data['Arguments']
+    arguments = list(data['Arguments'].keys())
     attack_relations = create_attack_relations_dict(data['Attack Relations'])
 
-    best_labeling = {'labeling': None, 'max_count': 0}
-    find_best_labeling(arguments, attack_relations, {}, best_labeling)
+    labeling = node_labeling(arguments, attack_relations)
 
-    print("Best Labeling:", best_labeling['labeling'])
+    print("Labeling:", labeling)
 
 if __name__ == "__main__":
     json_file_path = "example-argumentation-framework.json"
