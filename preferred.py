@@ -8,10 +8,12 @@ def read_json(file_path):
 def create_attack_relations_dict(attack_relations):
     attack_dict = {}
     for attack in attack_relations:
+        print(attack)
         attacker, attacked = attack
         if attacker not in attack_dict:
             attack_dict[attacker] = []
         attack_dict[attacker].append(attacked)
+        print(attack_dict)
     return attack_dict
 
 def is_conflict(arguments, labeling, attack_relations, arg1, arg2):
