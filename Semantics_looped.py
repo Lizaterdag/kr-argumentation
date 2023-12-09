@@ -131,6 +131,17 @@ def main():
 
     start_time = time.time()
     
+    for labeling_tuple in all_extensions:
+        labeling = dict(zip(arguments.keys(), labeling_tuple))
+
+        if valid_labeling(labeling, attack_dict):
+            valid_extensions.append(labeling)
+            if is_stable(labeling):
+                all_stable_extensions.append(labeling)
+
+    all_preferred_extensions = get_preferred_extensions(valid_extensions)
+    all_grounded_extensions = get_grounded_extensions(valid_extensions)
+    
     csv_filename = f'{filename.split(".")[0]}_results.csv'
     with open(csv_filename, 'w', newline='') as csvfile:
         fieldnames = ['Argument', 'Stable Semantics', 'Preferred Semantics', 'Grounded Semantics', 'Running Time']
@@ -140,16 +151,7 @@ def main():
         for argument_of_interest in arguments.keys():
             current_argument_time = time.time()
     
-            for labeling_tuple in all_extensions:
-                labeling = dict(zip(arguments.keys(), labeling_tuple))
-    
-                if valid_labeling(labeling, attack_dict):
-                    valid_extensions.append(labeling)
-                    if is_stable(labeling):
-                        all_stable_extensions.append(labeling)
-    
-            all_preferred_extensions = get_preferred_extensions(valid_extensions)
-            all_grounded_extensions = get_grounded_extensions(valid_extensions)
+            
     
             stable_extensions = [extension for extension in all_stable_extensions if aoi_is_in(extension, argument_of_interest)]
             preferred_extensions = [extension for extension in all_preferred_extensions if aoi_is_in(extension, argument_of_interest)]
