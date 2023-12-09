@@ -1,9 +1,9 @@
 Argument,Stable Semantics,Preferred Semantics,Grounded Semantics,Running Time
-0,False,False,False,0.00992894172668457
-1,True,True,False,0.248457670211792
-2,True,True,True,0.3160877227783203
+0,False,False,False,0.007910013198852539
+1,True,True,False,0.3687746524810791
+2,True,True,True,0.3708207607269287
 3,False,False,False,0.0
-4,True,True,True,0.34569668769836426
+4,True,True,True,0.4247293472290039
 5,False,False,False,0.0
-6,True,True,True,0.43606066703796387
-Overall Running Time,,,,1.3582403659820557
+6,True,True,True,0.39340925216674805
+Overall Running Time,,,,1.5710012912750244

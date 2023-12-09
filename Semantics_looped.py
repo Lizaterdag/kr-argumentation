@@ -73,7 +73,7 @@ def get_grounded_extensions(dictionaries):
 
 def valid_labeling(labeling, attack_dict):
     for arg, label in labeling.items():
-        attackers = attack_dict.get(int(arg), set())
+        attackers = attack_dict.get(arg, set())
 
         if label == 'IN' and any(labeling.get(str(attacker)) == 'IN' or labeling.get(str(attacker)) == "UNDECIDED" for attacker in attackers):
             return False
@@ -120,10 +120,9 @@ def visualize_graph(labels, edges, semantic, filename, argument_of_interest):
 
 
 def main():
-    #filename = sys.argv[1]
-    filename = "example-argumentation-framework.json"
+    filename = sys.argv[1]
     arguments, attacks = parse_json(filename)
-    attacks = [[int(a), int(b)] for a, b in attacks]
+    attacks = [[a, b] for a, b in attacks]
 
     all_extensions, attack_dict = generate_extensions(arguments, attacks)
 

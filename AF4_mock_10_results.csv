@@ -1,0 +1,12 @@
+Argument,Stable Semantics,Preferred Semantics,Grounded Semantics,Running Time
+arg0,False,False,False,0.23811125755310059
+arg1,True,True,True,0.7770867347717285
+arg2,False,False,False,0.0
+arg3,True,True,True,0.625974178314209
+arg4,False,False,False,0.0009133815765380859
+arg5,True,True,True,0.5084779262542725
+arg6,False,False,False,0.0009090900421142578
+arg7,True,True,True,0.5630936622619629
+arg8,False,False,False,0.0
+arg9,True,True,True,0.44077396392822266
+Overall Running Time,,,,3.1606273651123047
