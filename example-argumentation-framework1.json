@@ -1,11 +1,12 @@
 {
     "Arguments" : {
         "0": "We should go to the cinema.",
-        "1": "We should go to the gym."
+        "1":"asa"
+
         
     },
     
     "Attack Relations" : [
-        ["0","1"], ["1","0"],["0","0"]
+        ["0","1"], ["1","0"]
     ]
 }
