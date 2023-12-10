@@ -18,7 +18,7 @@ def parse_attacks(attacks):
         attack_dict.setdefault(attacked, set()).add(attacker)
     return attack_dict
 
-def generate_extensions(arguments, attacks):
+def generate_labelings(arguments, attacks):
     attack_dict = parse_attacks(attacks)
     extensions = itertools.product(['IN', 'OUT', 'UNDECIDED'], repeat=len(arguments))
     return extensions, attack_dict
@@ -125,7 +125,7 @@ def main():
     arguments, attacks = parse_json(filename)
     attacks = [[a, b] for a, b in attacks]
 
-    all_extensions, attack_dict = generate_extensions(arguments, attacks)
+    all_extensions, attack_dict = generate_labelings(arguments, attacks)
 
     valid_extensions = []
     all_stable_extensions = []

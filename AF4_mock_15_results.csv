@@ -1,17 +1,17 @@
 Argument,Stable Semantics,Preferred Semantics,Grounded Semantics,Running Time
-arg0,False,False,False,66.72462034225464
-arg1,True,True,True,1.056161642074585
-arg2,False,False,False,0.0007874965667724609
-arg3,True,True,True,0.8214602470397949
+arg0,False,False,False,0.0
+arg1,True,True,True,0.0006029605865478516
+arg2,False,False,False,0.0
+arg3,True,True,True,0.0
 arg4,False,False,False,0.0
-arg5,False,False,False,0.001012563705444336
+arg5,False,False,False,0.0
 arg6,False,False,False,0.0
-arg7,True,True,True,0.9574182033538818
-arg8,False,False,False,0.0
-arg9,False,False,False,0.0
-arg10,True,True,True,1.3966648578643799
-arg11,False,False,False,0.0010006427764892578
-arg12,True,True,True,1.636467695236206
+arg7,True,True,True,0.0
+arg8,False,False,False,0.0015072822570800781
+arg9,False,False,False,0.0010068416595458984
+arg10,True,True,True,0.0010845661163330078
+arg11,False,False,False,0.0
+arg12,True,True,True,0.0010001659393310547
 arg13,False,False,False,0.0
-arg14,True,True,True,1.332329511642456
-Overall Running Time,,,,73.93382287025452
+arg14,True,True,True,0.0
+Overall Running Time,,,,76.88727760314941
