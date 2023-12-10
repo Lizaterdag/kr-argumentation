@@ -1,7 +1,7 @@
 Argument,Stable Semantics,Preferred Semantics,Grounded Semantics,Running Time
-a,True,True,True,0.4680635929107666
-b,False,False,False,9.441375732421875e-05
-c,False,True,True,0.2333087921142578
-d,True,True,True,0.36424875259399414
-e,False,False,False,0.0009207725524902344
-Overall Running Time,,,,1.0709073543548584
+a,True,True,True,0.0
+b,False,False,False,0.0009992122650146484
+c,False,True,True,0.0
+d,True,True,True,0.0012736320495605469
+e,False,False,False,0.0010077953338623047
+Overall Running Time,,,,0.0052754878997802734

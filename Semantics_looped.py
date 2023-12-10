@@ -121,6 +121,7 @@ def visualize_graph(labels, edges, semantic, filename, argument_of_interest):
 
 def main():
     filename = sys.argv[1]
+    save_plots = False
     arguments, attacks = parse_json(filename)
     attacks = [[a, b] for a, b in attacks]
 
@@ -161,14 +162,15 @@ def main():
             print(f"  Stable Semantics: {bool(stable_extensions)}")
             print(f"  Preferred Semantics: {bool(preferred_extensions)}")
             print(f"  Grounded Semantics: {bool(grounded_extensions)}")
-    
-            # Save plots
-            if bool(stable_extensions):
-                visualize_graph(stable_extensions[0], attacks, "stable", filename, argument_of_interest)
-            if bool(preferred_extensions):
-                visualize_graph(preferred_extensions[0], attacks, "preferred", filename, argument_of_interest)
-            if bool(grounded_extensions):
-                visualize_graph(grounded_extensions[0], attacks, "grounded", filename, argument_of_interest)
+            
+            if save_plots:
+                # Save plots
+                if bool(stable_extensions):
+                    visualize_graph(stable_extensions[0], attacks, "stable", filename, argument_of_interest)
+                if bool(preferred_extensions):
+                    visualize_graph(preferred_extensions[0], attacks, "preferred", filename, argument_of_interest)
+                if bool(grounded_extensions):
+                    visualize_graph(grounded_extensions[0], attacks, "grounded", filename, argument_of_interest)
     
             current_argument_runtime = time.time() - current_argument_time
             print(f"  Running time for Argument {argument_of_interest}: {current_argument_runtime:.2f} seconds\n")
