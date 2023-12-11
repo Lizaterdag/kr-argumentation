@@ -15,6 +15,14 @@ def attack(attack_relations, current_argument, used, arguments, used_op):
             return new_argument, used
     return False, used
 
+def check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg):
+
+    for attacks in attack_relations:
+        if arguments[[attacks[0]][0]] == new_arg and arguments[[attacks[1]][0]] in used_pro:
+            attack_counter += 1
+
+    return attack_counter
+
 def argumentation(json_file_path, start_arg):
     with open(json_file_path, 'r') as json_file:
         json_data = json.load(json_file)
@@ -35,10 +43,12 @@ def argumentation(json_file_path, start_arg):
             break
         elif new_arg is False and used_pro == 1:
             winner = True
+            #print(used_op[-1])
             print("Opponent contradicted itself!")
             break
 
         for attacks in attack_relations:
+            #print(arguments[[attacks[0]][0]])
             if arguments[[attacks[0]][0]] == used_pro[-1]:
                 arg_key = attacks[0]
 
@@ -56,10 +66,19 @@ def argumentation(json_file_path, start_arg):
 
         new_arg = input(new_arg + "\n")
 
+        attack_counter = 0
+        attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
+
+        while attack_counter == 0:
+            print('User need to pick an argument that attacks the proponent')
+            new_arg = input(new_arg + "\n")
+            attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
+
         if new_arg in used_pro:
             winner = True
             print("Proponent contradicted itself")
             break
+
 
         while new_arg in used_op:
             print('User is not allowed to use the same argument more than 1 time.')
