@@ -15,6 +15,7 @@ def attack(attack_relations, current_argument, used, arguments, used_op):
             return new_argument, used
     return False, used
 
+
 def check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg):
 
     for attacks in attack_relations:
