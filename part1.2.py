@@ -33,6 +33,7 @@ def attack(attack_relations, current_argument, used, arguments, used_op):
 def check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg):
 
     for attacks in attack_relations:
+
         if arguments[[attacks[0]][0]] == new_arg and arguments[[attacks[1]][0]] in used_pro:
             attack_counter += 1
 
@@ -46,12 +47,26 @@ def argumentation(json_file_path, start_arg):
     attack_relations = json_data['Attack Relations']
 
     winner = False
-    used_op = [start_arg]
-    used_pro = ['']
+    used_op = []
+    used_pro = [start_arg]
     new_arg = start_arg
+    new_arg = input(new_arg + "\n")
+    attack_counter = 0
+    attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
+
+    while attack_counter == 0:
+        print('User need to pick an argument that attacks the proponent')
+        new_arg = input(new_arg + "\n")
+        attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
+    used_op.append(new_arg)
+
+    if new_arg in used_pro:
+        print("Opponent contradicted itself!")
+        winner = True
 
     while winner is False:
 
+        #new_arg = input(new_arg + "\n")
         new_arg, used_pro = attack(attack_relations, new_arg, used_pro, arguments, used_op)
         if new_arg is False and used_pro != 1:
             winner = True
@@ -81,6 +96,7 @@ def argumentation(json_file_path, start_arg):
             break
 
         new_arg = input(new_arg + "\n")
+        #used_op.append(new_arg)
 
         attack_counter = 0
         attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
@@ -90,6 +106,8 @@ def argumentation(json_file_path, start_arg):
             new_arg = input(new_arg + "\n")
             attack_counter = check_attackers(attack_relations, arguments, used_pro, attack_counter, new_arg)
 
+
+        #PROBLEM
         if new_arg in used_pro:
             winner = True
             print("Proponent contradicted itself")
@@ -97,6 +115,8 @@ def argumentation(json_file_path, start_arg):
 
         attack_count = 0
         while new_arg in used_op:
+            #PROBLEM
+            #print(used_op)
             if [str(new_arg), str(used_pro[-1])] in attack_relations and [str(used_pro[-1]), str(new_arg)] in attack_relations:
 
                 for at in attack_relations:
