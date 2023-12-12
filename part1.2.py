@@ -61,7 +61,7 @@ def argumentation(json_file_path, start_arg):
     used_op.append(new_arg)
 
     if new_arg in used_pro:
-        print("Opponent contradicted itself!")
+        print("Proponent contradicted itself!")
         winner = True
 
     while winner is False:
