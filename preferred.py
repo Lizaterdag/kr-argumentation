@@ -22,7 +22,7 @@ def is_conflict(labeling, arg, attack_relations):
             return True
     return False
 
-def node_labeling(arguments, attack_relations):
+def graph_labeling(arguments, attack_relations):
     labeling = {}
     for arg in arguments:
         labeling[arg] = 'undecided'
@@ -48,6 +48,10 @@ def node_labeling(arguments, attack_relations):
                     labeling[arg] = 'undecided'
                 elif labeling[arg] == 'out' and labeling[attacker] == 'out':
                     labeling[arg] = 'undecided'
+                
+                #TODO: get constraint undecided does not have 'in' attackers
+                if labeling[arg] == "undecided" and labeling[attacker] == "in":
+                    labeling[attacker] == 'out'
                     break
 
         # Break the loop if no changes were made to the labeling
@@ -61,7 +65,7 @@ def main(file_path):
     arguments = list(data['Arguments'].keys())
     attack_relations = create_attack_relations_dict(data['Attack Relations'])
 
-    labeling = node_labeling(arguments, attack_relations)
+    labeling = graph_labeling(arguments, attack_relations)
 
     print("Labeling:", labeling)
 
