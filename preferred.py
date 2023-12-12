@@ -24,6 +24,7 @@ def is_conflict(labeling, arg, attack_relations):
 
 def graph_labeling(arguments, attack_relations):
     labeling = {}
+    count = 0
     for arg in arguments:
         labeling[arg] = 'undecided'
 
@@ -43,20 +44,36 @@ def graph_labeling(arguments, attack_relations):
         # Check for constraint conflicts
         for arg, arg_label in labeling.items():
             for attacker in attack_relations.get(arg, []):
+                #print(f'0 {labeling[arg]} and attacker {labeling[attacker]}')
                 if labeling[arg] == 'in' and labeling[attacker] == 'in':
                     # Constraint conflict, set the label to 'undecided'
                     labeling[arg] = 'undecided'
                 elif labeling[arg] == 'out' and labeling[attacker] == 'out':
-                    labeling[arg] = 'undecided'
-                
-                #TODO: get constraint undecided does not have 'in' attackers
-                if labeling[arg] == "undecided" and labeling[attacker] == "in":
-                    labeling[attacker] == 'out'
-                    break
+                    labeling[arg] = 'in'
+                   
 
-        # Break the loop if no changes were made to the labeling
-        if prev_labeling == labeling:
+        for arg, arg_label in labeling.items():
+            for attacker in attack_relations.get(arg, []):    
+                #print(f'{labeling[arg]} and attacker {labeling[attacker]}')  
+                #TODO: get constraint undecided does not have 'in' attackers
+                if labeling[arg] == "in" and labeling[attacker] == "undecided":
+                    labeling[attacker] == 'out'
+                if labeling[arg] == "in" and labeling[attacker] == "in":
+                    labeling[attacker] == 'undecided'
+                    break
+        
+        # print(labeling)
+        # print(prev_labeling)
+        count += 1
+        if count == 10:
             break
+        # Break the loop if no changes were made to the labeling
+        # if prev_labeling == labeling:
+        #     break
+
+        #wrong resul
+        # if is_conflict(labeling, arg, attack_relations):
+        #     break
 
     return labeling
 
