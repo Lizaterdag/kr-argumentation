@@ -1,7 +1,7 @@
 Argument,Stable Semantics,Preferred Semantics,Grounded Semantics,Running Time
 a,False,False,True,0.0
-b,True,True,False,0.0009987354278564453
+b,True,True,False,0.0
 c,False,False,False,0.0
 d,True,True,False,0.0
-e,False,False,False,0.0009970664978027344
-Overall Running Time,,,,0.005001544952392578
+e,False,False,False,0.0
+Generation valid labelings,,,,0.002210855484008789

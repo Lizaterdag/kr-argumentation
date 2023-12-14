@@ -1,11 +1,8 @@
 import json
 import itertools
 import sys
-import time
-import csv
 import networkx as nx
 import matplotlib.pyplot as plt
-import os
 
 def parse_json(filename):
     with open(filename, 'r') as file:
@@ -18,7 +15,7 @@ def parse_attacks(attacks):
         attack_dict.setdefault(attacked, set()).add(attacker)
     return attack_dict
 
-def generate_labelings(arguments, attacks):
+def generate_extensions(arguments, attacks):
     attack_dict = parse_attacks(attacks)
     extensions = itertools.product(['IN', 'OUT', 'UNDECIDED'], repeat=len(arguments))
     return extensions, attack_dict
@@ -73,17 +70,8 @@ def get_grounded_extensions(dictionaries):
 
 def valid_labeling(labeling, attack_dict):
     for arg, label in labeling.items():
-        attackers = attack_dict.get(arg, set())
-        if not attackers:
-            if label != "IN":
-                return False
-        if any(labeling.get(str(attacker)) == 'IN' for attacker in attackers):
-            if label != "OUT":
-                return False
-        if not all(labeling.get(str(attacker)) == 'OUT' for attacker in attackers) and not any(labeling.get(str(attacker)) == 'IN' for attacker in attackers):
-            if label != "UNDECIDED":
-                return False
-               
+        attackers = attack_dict.get(int(arg), set())
+
         if label == 'IN' and any(labeling.get(str(attacker)) == 'IN' or labeling.get(str(attacker)) == "UNDECIDED" for attacker in attackers):
             return False
         if label == 'OUT' and all(labeling.get(str(attacker)) != 'IN' for attacker in attackers):
@@ -94,8 +82,6 @@ def valid_labeling(labeling, attack_dict):
                                       any(labeling.get(str(attacker)) == 'IN' for attacker in attackers)):
             return False 
     return True
-
-
 
 def visualize_graph(labels, edges, semantic, filename, argument_of_interest):
     G = nx.DiGraph()
@@ -115,32 +101,28 @@ def visualize_graph(labels, edges, semantic, filename, argument_of_interest):
 
     nx.draw_networkx_edges(G, pos, edgelist=G.edges(), width=2.0, alpha=0.7, edge_color='blue', connectionstyle="arc3,rad=0.1", arrowsize=20, arrows=True)
 
-    # Create folder if it doesn't exist
-    folder_name = f'imgs_{os.path.splitext(filename)[0]}'
-    os.makedirs(folder_name, exist_ok=True)
-
-    file = f"{folder_name}/{semantic}_{argument_of_interest}"
+    file = filename.split(".")[0]
     plt.title(f"{semantic} labeling for argument {argument_of_interest}")
-    plt.suptitle(f"{os.path.splitext(filename)[0]}", fontsize=8, y=0.87, style='italic', color='grey')
+    plt.suptitle(f"{file}", fontsize=8, y=0.87, style='italic', color='grey')
 
     plt.axis('off')
-    plt.savefig(file)
-    plt.clf()
+    plt.savefig(f"{semantic}_{argument_of_interest}_{file}")
+    plt.show()
+    
 
-
-def main():
+# Main execution
+if __name__ == "__main__":
     filename = sys.argv[1]
-    save_plots = False
+    argument_of_interest = sys.argv[2]
+    
     arguments, attacks = parse_json(filename)
-    attacks = [[a, b] for a, b in attacks]
+    attacks = [[int(a), int(b)] for a, b in attacks]
 
-    all_extensions, attack_dict = generate_labelings(arguments, attacks)
+    all_extensions, attack_dict = generate_extensions(arguments, attacks)
 
     valid_extensions = []
     all_stable_extensions = []
 
-    start_time = time.time()
-    
     for labeling_tuple in all_extensions:
         labeling = dict(zip(arguments.keys(), labeling_tuple))
 
@@ -149,63 +131,28 @@ def main():
             if is_stable(labeling):
                 all_stable_extensions.append(labeling)
 
+
     all_preferred_extensions = get_preferred_extensions(valid_extensions)
     all_grounded_extensions = get_grounded_extensions(valid_extensions)
-    
-    
-    prep_runtime = time.time() - start_time
-    print(prep_runtime)
-    csv_filename = f'{filename.split(".")[0]}_results.csv'
-    with open(csv_filename, 'w', newline='') as csvfile:
-        fieldnames = ['Argument', 'Stable Semantics', 'Preferred Semantics', 'Grounded Semantics', 'Running Time']
-        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
-        
-        writer.writeheader()
-        for argument_of_interest in arguments.keys():
-            current_argument_time = time.time()
-    
-            
-    
-            stable_extensions = [extension for extension in all_stable_extensions if aoi_is_in(extension, argument_of_interest)]
-            preferred_extensions = [extension for extension in all_preferred_extensions if aoi_is_in(extension, argument_of_interest)]
-            grounded_extensions = [extension for extension in all_grounded_extensions if aoi_is_in(extension, argument_of_interest)]
-            
-            current_argument_runtime = time.time() - current_argument_time 
-            
-            print(f"Argument {argument_of_interest}:")
-            print(f"  Stable Semantics: {bool(stable_extensions)}")
-            print(f"  Preferred Semantics: {bool(preferred_extensions)}")
-            print(f"  Grounded Semantics: {bool(grounded_extensions)}")
-            
-            if save_plots:
-                # Save plots
-                if bool(stable_extensions):
-                    visualize_graph(stable_extensions[0], attacks, "stable", filename, argument_of_interest)
-                if bool(preferred_extensions):
-                    visualize_graph(preferred_extensions[0], attacks, "preferred", filename, argument_of_interest)
-                if bool(grounded_extensions):
-                    visualize_graph(grounded_extensions[0], attacks, "grounded", filename, argument_of_interest)
-    
-            
-            print(f"  Running time for Argument {argument_of_interest}: {current_argument_runtime:.2f} seconds\n")
-            
-            writer.writerow({
-                'Argument': argument_of_interest,
-                'Stable Semantics': str(bool(stable_extensions)),
-                'Preferred Semantics': str(bool(preferred_extensions)),
-                'Grounded Semantics': str(bool(grounded_extensions)),
-                'Running Time': current_argument_runtime
-            })
-    overall_runtime = time.time()-start_time
-    print(f"Overall running time: {overall_runtime:.2f} seconds")
 
-    # Add the overall running time row to CSV
-    with open(csv_filename, 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(['Generation valid labelings', '', '', '', prep_runtime])
+    stable_extensions = [extension for extension in all_stable_extensions if aoi_is_in(extension, argument_of_interest)]
+    preferred_extensions = [extension for extension in all_preferred_extensions if aoi_is_in(extension, argument_of_interest)]
+    grounded_extensions = [extension for extension in all_grounded_extensions if aoi_is_in(extension, argument_of_interest)]
 
-    print(f"Results saved in {csv_filename}")
+    if stable_extensions:
+        print(f"Argument {argument_of_interest} is credulously accepted under stable semantics: TRUE")
+        visualize_graph(stable_extensions[0], attacks, "stable", filename, argument_of_interest)
+    else:
+        print(f"Argument {argument_of_interest} is credulously accepted under stable semantics: FALSE")
 
+    if preferred_extensions:
+        print(f"Argument {argument_of_interest} is credulously accepted under preferred semantics: TRUE")
+        visualize_graph(preferred_extensions[0], attacks, "preferred", filename, argument_of_interest)
+    else:
+        print(f"Argument {argument_of_interest} is credulously accepted under preferred semantics: FALSE")
 
-if __name__ == "__main__":
-    main()
+    if grounded_extensions:
+        print(f"Argument {argument_of_interest} is credulously accepted under grounded semantics: TRUE")
+        visualize_graph(grounded_extensions[0], attacks, "grounded", filename, argument_of_interest)
+    else:
+        print(f"Argument {argument_of_interest} is credulously accepted under grounded semantics: FALSE")
